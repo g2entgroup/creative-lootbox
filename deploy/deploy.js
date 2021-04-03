@@ -1,60 +1,57 @@
-const debug = require('debug')('loot-box:deploy.js')
-const { deploy1820 } = require('deploy-eip-1820')
+const debug = require("debug")("loot-box:deploy.js");
+const { deploy1820 } = require("deploy-eip-1820");
 
 module.exports = async (buidler) => {
-  const { getNamedAccounts, deployments } = buidler
-  const { deploy } = deployments  
-  const { deployer } = await getNamedAccounts()
-  const signer = await ethers.provider.getSigner(deployer)
+  const { getNamedAccounts, deployments } = buidler;
+  const { deploy } = deployments;
+  const { deployer } = await getNamedAccounts();
+  const signer = await ethers.provider.getSigner(deployer);
 
-  const chainId = (await ethers.provider.getNetwork()).chainId
-  const isRinkeby = chainId == 4
-  const isTestOrCoverage =  chainId == 31337 || chainId == 1337;
+  const chainId = (await ethers.provider.getNetwork()).chainId;
+  // const isRinkeby = chainId == 4;
+  const isMumbai = chainId == 80001;
 
-  await deploy1820(signer)
+  const isTestOrCoverage = chainId == 31337 || chainId == 1337;
 
-  debug({ deployer })
+  await deploy1820(signer);
 
-  if(isTestOrCoverage || isRinkeby){
-    await deploy('ERC20Mintable',{
+  debug({ deployer });
+
+  if (isTestOrCoverage || isMumbai) {
+    await deploy("ERC20Mintable", {
       from: deployer,
       skipIfAlreadyDeployed: true,
-      args:  ['test', 'test']
-    }
-    )
-    await deploy('ERC721Mintable',{
+      args: ["test", "test"],
+    });
+    await deploy("ERC721Mintable", {
       from: deployer,
       skipIfAlreadyDeployed: true,
-      args:  ['test', 'test', 'hello.com']
-    }
-    )
-    await deploy('ERC1155Mintable',{
+      args: ["test", "test", "hello.com"],
+    });
+    await deploy("ERC1155Mintable", {
       from: deployer,
       skipIfAlreadyDeployed: true,
-      args:  ["https://blah.com"]
-    }
-    )
-    await deploy('ERC777Mintable',{
+      args: ["https://blah.com"],
+    });
+    await deploy("ERC777Mintable", {
       from: deployer,
       skipIfAlreadyDeployed: true,
-      args: ['test', 'test', []]
-    }
-    )
+      args: ["test", "test", []],
+    });
   }
 
-  await deploy('LootBoxController', {
+  await deploy("LootBoxController", {
     from: deployer,
-    skipIfAlreadyDeployed: true
-  })
+    skipIfAlreadyDeployed: true,
+  });
 
-  await deploy('ERC721ControlledFactory', {
+  await deploy("ERC721ControlledFactory", {
     from: deployer,
-    skipIfAlreadyDeployed: true
-  })
+    skipIfAlreadyDeployed: true,
+  });
 
-  await deploy('LootBoxPrizeStrategyListenerFactory', {
+  await deploy("LootBoxPrizeStrategyListenerFactory", {
     from: deployer,
-    skipIfAlreadyDeployed: true
-  })
-
+    skipIfAlreadyDeployed: true,
+  });
 };
