@@ -110,4 +110,3 @@ $ yarn start-gas
 # run the tests with gas reporter
 $ yarn gas
 ```
-Webhook Test
